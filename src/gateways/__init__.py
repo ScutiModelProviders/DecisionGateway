@@ -7,8 +7,9 @@ import httpx
 
 from src.gateways.base import BaseGateway
 from src.gateways.typesafe import TypeSafeGateway
+from src.gateways.ollama import OllamaGateway
 
-KINDS: dict[str, type[BaseGateway]] = {"typesafe": TypeSafeGateway}
+KINDS: dict[str, type[BaseGateway]] = {"typesafe": TypeSafeGateway, "ollama": OllamaGateway}
 
 
 def build_gateway(gateway_id: str, entry: dict[str, Any], transport: httpx.AsyncBaseTransport | None = None) -> BaseGateway:
