@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+### Playground works behind a path-prefix proxy
+
+The Try it panel built its request URLs from the page origin, so behind ServiceHub (`/s/<id>/`) it called the hub's root and got 404 Not Found. It now resolves routes against the service root (`../` from the admin page). Same-origin checking is unchanged.
+
 ## 1.0.0
 
 - Admin sign-in loads live settings; gateway changes clear stale answers; incomplete upstream streams return clean errors.
