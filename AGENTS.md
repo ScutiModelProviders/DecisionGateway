@@ -21,5 +21,4 @@ Edit `AGENTS.md`; `CLAUDE.md` only imports it through `@AGENTS.md`.
 - Use `httpx.MockTransport` for tests; no real network or API keys.
 - Keep `src/admin_api.py`, `src/tokens.py`, `src/middleware.py`, `src/runtime.py`, `web/index.html`, `web/playground.js`, `tests/test_admin_api.py`, `tests/test_tokens.py`, `tests/seed.py`, `tests/test_env_file.py` and `tools/check_sync.py` byte-identical to Bard. If a copied test fails, stop and report. `tools/check_sync.py` must exit 0.
 - Author commits with email `214214011+scutiii2@users.noreply.github.com` and name from `git -C ../Bard config user.name`. End messages with `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>`.
-- Update docs with behavior changes. Current approved implementation separates project files (Task 10) from service docs (Task 12).
-- Current authorization excludes Task 11 and all sibling/shared edits. Only Task 12's vault note through `project-sync` is authorized outside this project. Do not push, add a remote or run `tools/publish_live.py`.
+- Behaviour changes update `README.md`, `deployment.md`, the guides in `docs/`, `.env.example`, `AGENTS.md` and `CHANGELOG.md` in the same commit. Do not push, add a remote or run `tools/publish_live.py` unless asked.

@@ -128,5 +128,3 @@ Containers on `citadel_core` call `http://decisiongateway:29406`; decide is `POS
 - [Docker on this PC](docs/guide-docker-same-device.md)
 - [Docker on another machine](docs/guide-docker-deployment-device.md)
 - [Run without Docker](docs/guide-no-docker-same-device.md)
-- [Approved design](docs/superpowers/specs/2026-11-10-decision-gateway-design.md)
-- [Approved implementation plan](docs/superpowers/plans/2026-11-10-decision-gateway.md)
