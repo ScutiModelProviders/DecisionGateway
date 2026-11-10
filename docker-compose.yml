@@ -1,0 +1,32 @@
+# DecisionGateway HTTP service for decision-type models; no model runs here.
+# Start: docker compose up -d --build (callers use http://decisiongateway:29406/api/decide).
+# Needs a .env next to this file with SERVICE_ADMIN_PASSWORD; create callers' tokens on /admin/. See .env.example.
+# Connect TypeSafe Jev, Ollama, DSC_Laya_Model or DSC_D3_Model on /admin/gateways.html.
+name: decisiongateway
+
+services:
+  decisiongateway:
+    build: .
+    restart: unless-stopped
+    environment:
+      SERVICE_ADMIN_PASSWORD: ${SERVICE_ADMIN_PASSWORD:?set SERVICE_ADMIN_PASSWORD in .env (it unlocks the token page)}
+    ports:
+      - "${SERVICE_BIND:-0.0.0.0}:${SERVICE_PORT:-29406}:29406"
+    volumes:
+      - decisiongateway_data:/data
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:29406/health')"]
+      interval: 15s
+      timeout: 5s
+      start_period: 30s
+    networks: [citadel]
+
+volumes:
+  decisiongateway_data:
+
+networks:
+  # Join the Citadel stack's network so armory/ember_api can reach http://decisiongateway:29406.
+  # Start the Citadel stack first: it creates this network.
+  citadel:
+    name: citadel_core
+    external: true
