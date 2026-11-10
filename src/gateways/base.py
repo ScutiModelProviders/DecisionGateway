@@ -29,7 +29,7 @@ async def upstream_post(client: httpx.AsyncClient, url: str, *, json: dict[str, 
 def raise_for_status(status: int, name: str) -> None:
     if status < 400:
         return
-    if status == 400:
+    if status in (400, 422):
         raise GatewayError(422, "gateway_refused", f"{name} refused the request. Check the images, the question types and the model.")
     if status in (401, 403):
         raise GatewayError(502, "gateway_auth", f"{name} refused the credentials.")
