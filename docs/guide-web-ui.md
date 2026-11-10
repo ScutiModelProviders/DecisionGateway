@@ -39,6 +39,8 @@ TypeSafe Test uses `/v1/models`, Ollama Test uses `/api/show`, and Scuti Test us
 
 Saved values override environment defaults; reset removes the saved override. These options apply live:
 
+The shared page reads and saves these through password-guarded `GET` / `PUT /admin/settings`. Gateway configuration changes clear the answer cache when the adapter is next rebuilt.
+
 | Setting | Default | Range |
 |---|---|---|
 | Longest text | 16000 characters | 1–100000 |

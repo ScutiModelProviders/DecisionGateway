@@ -95,6 +95,7 @@ class ScutiGateway(BaseGateway):
                         return
                     elif kind == "error":
                         raise GatewayError(502, "gateway_error", f"{NAME} stopped answering.")
+                raise GatewayError(502, "gateway_bad_reply", f"{NAME} ended its reply before completion.")
         except httpx.HTTPError:
             raise GatewayError(502, "gateway_unreachable", f"{NAME} could not be reached.") from None
 

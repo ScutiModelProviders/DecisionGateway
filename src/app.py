@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import hmac
 import json
 import os
 from pathlib import Path
@@ -119,6 +120,25 @@ def build_app(settings: Settings, config: Config | None = None, transport: httpx
         register(mcp, connect=CONNECT, service="DecisionGateway", admin_password=base.admin_password, usage=usage,
                  backends=Backends(base.state_dir / "backends.json"), tokens=tokens, status=status, slots=[])
         gateways_api.register(mcp, admin_password=base.admin_password, store=store, service=service)
+
+        @mcp.custom_route("/admin/settings", methods=["GET", "PUT"])
+        async def admin_settings(request: Request) -> Response:
+            """Expose the saved settings expected by the shared admin page."""
+            given = request.headers.get("x-admin-password", "").encode("utf-8")
+            if not hmac.compare_digest(given, base.admin_password.encode("utf-8")):
+                return JSONResponse({"detail": "Wrong admin password."}, status_code=401)
+            if request.method == "PUT":
+                try:
+                    values = (await request.json())["values"]
+                    if not isinstance(values, dict):
+                        raise TypeError
+                except (ValueError, KeyError, TypeError):
+                    return JSONResponse({"detail": 'Send {"values": {...}}.'}, status_code=422)
+                try:
+                    await asyncio.to_thread(config.set, values)
+                except ValueError as error:
+                    return JSONResponse({"detail": str(error)}, status_code=422)
+            return JSONResponse({"service": "DecisionGateway", "settings": await asyncio.to_thread(config.describe)})
 
     app = mcp.streamable_http_app()
     if config is not None and WEB_DIR.is_dir():

@@ -37,6 +37,8 @@ Answers contain `type`, the corresponding `choice`, `score`, `noul` or `box` val
 
 **Cache.** Answers are cached in memory for 300 seconds, up to 500 entries by default. The key includes gateway id, text, questions, asset-content hashes, `min_confidence` and `trace`; `stream` is excluded. Change cache settings on the admin page. Restart clears the cache.
 
+Rebuilding an adapter after a saved gateway change clears cached answers so the new model/address is used. A truncated upstream stream produces a clean error instead of silently ending.
+
 ### Gateways
 
 Save entries at `/admin/gateways.html`; addresses and upstream credentials have no environment variables. All kinds accept unique `id` (`[a-z0-9][a-z0-9_-]{0,47}`) and integer `timeout_s` (1–600, default 60).

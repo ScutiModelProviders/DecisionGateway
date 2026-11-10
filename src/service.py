@@ -33,6 +33,7 @@ class DecisionService:
             raise GatewayError(422, "unknown_gateway", f"There is no gateway named '{gateway_id}'.")
         cached = self._gateways.get(gateway_id)
         if cached is None or cached[0] != entry:  # rebuilt when the saved entry changed
+            self._cache.clear()
             cached = (entry, build_gateway(gateway_id, entry, self._transport))
             self._gateways[gateway_id] = cached
         return cached[1]

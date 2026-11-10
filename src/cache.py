@@ -40,3 +40,7 @@ class AnswerCache:
         self._rows.move_to_end(key)
         while len(self._rows) > self._entries():
             self._rows.popitem(last=False)
+
+    def clear(self) -> None:
+        """Discard answers when the saved upstream configuration changes."""
+        self._rows.clear()
