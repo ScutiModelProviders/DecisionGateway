@@ -5,20 +5,39 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gateways · DecisionGateway</title>
 <style>
-  :root { --bg:#fff; --fg:#1b1f24; --muted:#59636e; --line:#d0d7de; --accent:#0b5fff; --bad:#b42318; --ok:#067647; }
-  @media (prefers-color-scheme: dark) { :root:not([data-theme=light]) { --bg:#14181d; --fg:#e6edf3; --muted:#9aa4af; --line:#30363d; --accent:#6ea0ff; --bad:#ff8b81; --ok:#56d364; } }
-  :root[data-theme=dark] { --bg:#14181d; --fg:#e6edf3; --muted:#9aa4af; --line:#30363d; --accent:#6ea0ff; --bad:#ff8b81; --ok:#56d364; }
-  body { margin:0; padding:16px; background:var(--bg); color:var(--fg); font:15px/1.5 system-ui, sans-serif; max-width:960px; margin-inline:auto; }
-  h1 { font-size:1.3rem; } h2 { font-size:1.05rem; margin-top:1.6rem; }
-  label { display:block; margin:.6rem 0 .2rem; font-weight:600; }
-  input, select, button { font:inherit; color:inherit; background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:.4rem .6rem; }
-  input, select { width:100%; max-width:30rem; box-sizing:border-box; }
-  button { cursor:pointer; } button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
-  button:focus-visible, input:focus-visible, select:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-  table { border-collapse:collapse; width:100%; } th, td { text-align:left; padding:.4rem .5rem; border-bottom:1px solid var(--line); vertical-align:top; }
-  .wrap { overflow-x:auto; } .muted { color:var(--muted); } #status { min-height:1.5rem; margin-top:.8rem; } .bad { color:var(--bad); } .ok { color:var(--ok); }
-  .embedded { padding:0; max-width:none; } .embedded h1, .embedded #pwrow { display:none; }
-  .row { display:flex; gap:.5rem; flex-wrap:wrap; align-items:end; }
+  :root {
+    --bg: light-dark(#ffffff, #19191c); --page: light-dark(#f5f7fb, #131315); --surface: light-dark(#f3f5fa, #202023);
+    --text: light-dark(#1a2132, #eeeeef); --muted: light-dark(#5c6578, #b0b0b8); --border: light-dark(#dde2eb, #39393e);
+    --accent: light-dark(#4444c6, #ff935a); --accent-contrast: light-dark(#ffffff, #19191c); --selected: light-dark(#edeeff, #3b2b23);
+    --ok: light-dark(#17734f, #79d9b0); --error: light-dark(#b02d37, #ffa1ab); --radius: 8px;
+    color-scheme: light dark; font: 14px/1.5 system-ui, "Segoe UI", sans-serif; color: var(--text); background: var(--page);
+  }
+  :root[data-theme=light] { color-scheme: light; } :root[data-theme=dark] { color-scheme: dark; }
+  *, *::before, *::after { box-sizing: border-box; } [hidden] { display: none !important; }
+  body { margin: 0; padding: 24px 16px; max-width: 1040px; margin-inline: auto; }
+  .embedded { padding: 0; max-width: none; background: transparent; } .embedded h1, .embedded #pwrow { display: none; }
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  h1, h2, p { margin: 0; } h1 { font-size: 1.3rem; font-weight: 600; letter-spacing: -.015em; line-height: 1.3; }
+  h2 { font-size: 1.15rem; font-weight: 600; letter-spacing: -.015em; margin-top: 26px; padding-top: 24px; border-top: 1px solid var(--border); }
+  .muted { color: var(--muted); } p.muted { max-width: 70ch; margin: 6px 0 16px; }
+  label { display: block; font-weight: 500; margin: 16px 0 6px; }
+  button, input, select { font: inherit; color: inherit; }
+  button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; background: var(--bg); cursor: pointer; }
+  button:hover { background: var(--surface); } button.small { padding: 6px 10px; min-height: 32px; font-size: .9rem; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); } button.primary:hover { filter: brightness(.95); }
+  button:disabled { opacity: .55; cursor: default; }
+  input, select { width: 100%; max-width: 30rem; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; background: var(--bg); caret-color: var(--accent); }
+  input:focus-visible, select:focus-visible { outline: 0; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 28%, transparent); }
+  .wrap { overflow-x: auto; max-width: 100%; }
+  table { width: 100%; border-collapse: collapse; font-size: .9rem; margin-top: 14px; }
+  th, td { padding: 12px 8px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; overflow-wrap: anywhere; }
+  th { color: var(--muted); font-size: .85rem; font-weight: 500; } th:first-child, td:first-child { padding-left: 0; } th:last-child, td:last-child { padding-right: 0; }
+  td:last-child { white-space: nowrap; }
+  form { max-width: 760px; margin-top: 16px; padding: 18px 20px 20px; background: var(--surface); border-radius: var(--radius); }
+  form label:first-child { margin-top: 0; } form p { margin-top: 18px; }
+  .row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-top: 16px; } .row label { margin-top: 0; }
+  #status { min-height: 1.5rem; margin-top: 14px; } .bad { color: var(--error); } .ok { color: var(--ok); }
+  @media (max-width: 640px) { table { min-width: 560px; } }
 </style>
 </head>
 <body>
@@ -74,7 +93,7 @@ async function load() {
       for (const v of [g.id, g.kind, g.model || g.url, g.streams ? "yes" : "no", g.images ? "yes" : "no", g.types.join(", "), g.reachable ? "yes" : "no"]) tr.insertCell().textContent = v;
       const cell = tr.insertCell();
       for (const [name, fn] of [["Test", () => test(g.id)], ["Edit", () => edit(g)], ["Delete", () => remove(g.id)]]) {
-        const b = document.createElement("button"); b.type = "button"; b.textContent = name; b.setAttribute("aria-label", `${name} ${g.id}`); b.onclick = fn; cell.append(b, " ");
+        const b = document.createElement("button"); b.type = "button"; b.className = "small"; b.textContent = name; b.setAttribute("aria-label", `${name} ${g.id}`); b.onclick = fn; cell.append(b, " ");
       }
     }
     if (!data.gateways.length) rows.insertRow().insertCell().textContent = "No gateways saved yet.";

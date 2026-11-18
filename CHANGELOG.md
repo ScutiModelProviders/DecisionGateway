@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Neutral dark theme
+
+The admin page's dark theme uses the neutral dark palette with the orange accent again, in place of the blue-navy one from the tabbed redesign. The light theme is unchanged.
+
+### Gateways tab matches the other tabs
+
+The Gateways editor now uses the admin page's colors, type, tables, buttons and form card, and follows the Theme toggle.
+
 ### Gateways in the sidebar
 
 The sidebar item that was called Model connections is now Gateways and shows the gateway list and editor inside the admin page. `/admin/gateways.html` still works on its own. The admin page and `tools/check_sync.py` now stay in step with ConversationGateway only, not with the tool services.
