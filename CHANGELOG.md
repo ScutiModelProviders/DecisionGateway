@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Test shows its result where you can see it
+
+The message of Test, Save and Delete sat under the long form, so pressing Test seemed to do nothing. It now sits above the table, scrolls into view, and Test shows "Testing…" while it waits.
+
 ### Usual addresses and a model-name link on the Gateways page
 
 A new gateway starts from the usual address of its kind (TypeSafe's API, Ollama on `127.0.0.1:11434`, a Scuti model service on `127.0.0.1:29220`); change it when the service runs elsewhere. An Ollama gateway shows a link to the model names on ollama.com.
