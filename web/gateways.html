@@ -64,6 +64,7 @@
   <label for="gid">Id</label><input id="gid" required pattern="[a-z0-9][a-z0-9_\-]{0,47}" autocomplete="off">
   <label for="kind">Kind</label><select id="kind"><option>typesafe</option><option>ollama</option><option>scuti</option></select>
   <div id="fields"></div>
+  <p id="models-help" class="muted" hidden><a href="https://ollama.com/library" target="_blank" rel="noopener noreferrer">Model names on ollama.com</a> (opens in a new tab)</p>
   <label for="timeout_s">Timeout (seconds)</label><input id="timeout_s" type="number" min="1" max="600" value="60">
   <p><button class="primary" type="submit">Save gateway</button></p>
 </form>
@@ -94,12 +95,15 @@ const call = async (method, path, body) => {
   if (!reply.ok) throw new Error(data.detail || `Request failed (${reply.status})`);
   return data;
 };
+// The usual address of each kind; a new gateway starts from it (change it when the service runs elsewhere).
+const DEFAULT_URL = { typesafe: "https://api.typesafe.ai/v1/systemone", ollama: "http://127.0.0.1:11434", scuti: "http://127.0.0.1:29220" };
 function drawFields(saved = {}) {
+  $("models-help").hidden = $("kind").value !== "ollama";
   $("fields").replaceChildren();
   for (const [name, label, secret, required] of kinds[$("kind").value] || []) {
     const l = document.createElement("label"); l.htmlFor = name; l.textContent = label + (required ? " *" : "");
     const i = document.createElement("input"); i.id = name; i.autocomplete = "off"; i.type = secret ? "password" : "text";
-    if (secret && saved["has_" + name]) i.placeholder = "saved (leave empty to keep)"; else if (saved[name] != null) i.value = saved[name];
+    if (secret && saved["has_" + name]) i.placeholder = "saved (leave empty to keep)"; else if (saved[name] != null) i.value = saved[name]; else if (name === "url") i.value = DEFAULT_URL[$("kind").value] ?? "";
     $("fields").append(l, i);
   }
 }
