@@ -40,7 +40,7 @@
   form { max-width: 760px; margin-top: 16px; padding: 18px 20px 20px; background: var(--surface); border-radius: var(--radius); }
   form label:first-child { margin-top: 0; } form p { margin-top: 18px; }
   .row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-top: 16px; } .row label { margin-top: 0; }
-  #status { min-height: 1.5rem; margin-top: 14px; } .bad { color: var(--error); } .ok { color: var(--ok); }
+  #status { margin-top: 14px; } #status:not(:empty) { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); } .bad { color: var(--error); } .ok { color: var(--ok); }
   @media (max-width: 640px) { table { min-width: 560px; } }
 </style>
 </head>
@@ -53,6 +53,7 @@
   <button id="load" class="primary" type="button">Load gateways</button>
 </div>
 
+<div id="status" role="status" aria-live="polite"></div>
 <h2>Saved gateways</h2>
 <div class="wrap"><table>
   <thead><tr><th>Id</th><th>Kind</th><th>Model or address</th><th>Streams</th><th>Images</th><th>Question types</th><th>Reachable</th><th></th></tr></thead>
@@ -68,7 +69,6 @@
   <label for="timeout_s">Timeout (seconds)</label><input id="timeout_s" type="number" min="1" max="600" value="60">
   <p><button class="primary" type="submit">Save gateway</button></p>
 </form>
-<div id="status" role="status" aria-live="polite"></div>
 
 <script>
 let kinds = {};
@@ -88,7 +88,7 @@ function iconButton(kind, label, tag = "button") {
   return el;
 }
 const $ = (id) => document.getElementById(id);
-const say = (text, cls = "") => { $("status").className = cls; $("status").textContent = text; };
+const say = (text, cls = "") => { $("status").className = cls; $("status").textContent = text; $("status").scrollIntoView({ block: "center" }); };
 const call = async (method, path, body) => {
   const reply = await fetch(path, { method, headers: { "X-Admin-Password": $("pw").value, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
   const data = await reply.json().catch(() => ({}));
@@ -124,7 +124,7 @@ async function load() {
   } catch (e) { say(e.message, "bad"); }
 }
 function edit(g) { $("gid").value = g.id; $("kind").value = g.kind; drawFields(g); $("timeout_s").value = g.timeout_s; $("gid").focus(); }
-async function test(id) { try { const r = await call("POST", `/admin/gateways/${id}/test`); say(r.ok ? `${id}: ${r.message}` : `${id}: ${r.detail}`, r.ok ? "ok" : "bad"); } catch (e) { say(e.message, "bad"); } }
+async function test(id) { say(`Testing ${id}…`); try { const r = await call("POST", `/admin/gateways/${id}/test`); say(r.ok ? `${id}: ${r.message}` : `${id}: ${r.detail}`, r.ok ? "ok" : "bad"); } catch (e) { say(e.message, "bad"); } }
 async function remove(id) { if (!confirm(`Delete the gateway "${id}"?`)) return; try { await call("DELETE", `/admin/gateways/${id}`); await load(); } catch (e) { say(e.message, "bad"); } }
 $("load").onclick = load;
 if (new URLSearchParams(location.search).has("embed")) {  // shown in the admin sidebar: the signed-in password is reused
