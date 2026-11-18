@@ -57,7 +57,7 @@
 </head>
 <body>
 <h1>Gateways</h1>
-<p class="muted">Each gateway is one model the service can ask: a TypeSafe Jev model, an Ollama decision model, or a Scuti model service. Callers name a gateway by its id.</p>
+<p class="muted">Each gateway is one model the service can ask: a TypeSafe Jev model, an Ollama decision model, a Scuti model service, or FreeLLMAPI (free decision models). Callers name a gateway by its id.</p>
 
 <div class="row" id="pwrow">
   <div><label for="pw">Admin password</label><input id="pw" type="password" autocomplete="off"></div>
@@ -75,7 +75,7 @@
 <form id="form">
   <label for="preset">Start from</label><select id="preset"><option value="">Blank</option></select>
   <label for="gid">Id</label><input id="gid" required pattern="[a-z0-9][a-z0-9_\-]{0,47}" autocomplete="off">
-  <label for="kind">Kind</label><select id="kind"><option>typesafe</option><option>ollama</option><option>scuti</option></select>
+  <label for="kind">Kind</label><select id="kind"><option>typesafe</option><option>ollama</option><option>scuti</option><option>freellmapi</option></select>
   <div id="fields"></div>
   <p id="models-help" class="muted" hidden><a href="https://ollama.com/library" target="_blank" rel="noopener noreferrer">Model names on ollama.com</a> (opens in a new tab)</p>
   <label for="timeout_s">Timeout (seconds)</label><input id="timeout_s" type="number" min="1" max="600" value="60">
@@ -112,7 +112,7 @@ const call = async (method, path, body) => {
   return data;
 };
 // The usual address of each kind; a new gateway starts from it (change it when the service runs elsewhere).
-const DEFAULT_URL = { typesafe: "https://api.typesafe.ai/v1/systemone", ollama: "http://127.0.0.1:11434", scuti: "http://127.0.0.1:29220" };
+const DEFAULT_URL = { typesafe: "https://api.typesafe.ai/v1/systemone", ollama: "http://127.0.0.1:11434", scuti: "http://127.0.0.1:29220", freellmapi: "http://127.0.0.1:29652" };
 function drawFields(saved = {}) {
   $("models-help").hidden = $("kind").value !== "ollama";
   $("fields").replaceChildren();
@@ -135,6 +135,11 @@ async function load() {
       if (modelLists[g.kind]) {  // the provider's own page of model names, in a new tab
         const a = iconButton("models", `Model names for ${g.id} (opens in a new tab)`, "a");
         a.href = modelLists[g.kind]; a.target = "_blank"; a.rel = "noopener noreferrer"; actions.append(a);
+      }
+      if (g.kind === "freellmapi") {  // its dashboard (same port) lists the decision models: on the saved host, or on this page's host when that is local
+        const u = new URL(g.url), host = u.hostname, local = ["host.docker.internal", "localhost", "127.0.0.1"].includes(host);
+        const a = iconButton("models", `Model names for ${g.id} (opens in a new tab)`, "a");
+        a.href = `${u.protocol}//${local ? location.hostname : host}${u.port ? ":" + u.port : ""}/`; a.target = "_blank"; a.rel = "noopener noreferrer"; actions.append(a);
       }
       for (const [kind, name, fn] of [["test", "Test", (b) => test(g.id, b)], ["edit", "Edit", () => edit(g)], ["delete", "Delete", () => remove(g.id)]]) {
         const b = iconButton(kind, `${name} ${g.id}`); b.onclick = () => fn(b); actions.append(b);

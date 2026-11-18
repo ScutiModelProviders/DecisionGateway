@@ -22,18 +22,19 @@ Create one token per caller. Copy the newly issued token directly into the calle
 
 ## Gateways
 
-Open `/admin/gateways.html`, enter the admin password and press **Load gateways**. The table shows id, kind, model/address, streams, images, supported question types and reachability. **Edit** loads an entry into the form; **Delete** requests confirmation; **Test** probes connectivity. **Start from** fills the form from a preset (`laya`, `jev`, `ollama`); add the secret yourself. An Ollama row has a Models button that opens ollama.com's model names in a new tab.
+Open `/admin/gateways.html`, enter the admin password and press **Load gateways**. The table shows id, kind, model/address, streams, images, supported question types and reachability. **Edit** loads an entry into the form; **Delete** requests confirmation; **Test** probes connectivity. **Start from** fills the form from a preset (`laya`, `jev`, `ollama`, `freellmapi`); add the secret yourself. An Ollama row has a Models button that opens ollama.com's model names in a new tab.
 
 | Fields | Meaning |
 |---|---|
-| Id, Kind, Timeout | Unique lowercase id; `typesafe`, `ollama` or `scuti`; timeout 1–600 seconds |
+| Id, Kind, Timeout | Unique lowercase id; `typesafe`, `ollama`, `scuti` or `freellmapi`; timeout 1–600 seconds |
 | TypeSafe | Optional address, required model and API key on first save |
 | Ollama | Required address and installed decision-model name |
+| FreeLLMAPI | Required address, required API key, optional decision model (empty: automatic). A FreeLLMAPI row has a Models button that opens its dashboard in a new tab |
 | Scuti | Required model-service address; optional token, strategy and window 16–8192 |
 
 Secret inputs use password fields. Saved secrets are never returned; a saved hint appears instead. Leave a saved secret empty to retain it. Errors appear in the page's live status region. Credentials entered here are for the upstream gateway; caller tokens belong on the shared Access tokens page. The password field stays in memory on the gateway page.
 
-TypeSafe Test uses `/v1/models`, Ollama Test uses `/api/show`, and Scuti Test uses `/health`. A successful test checks connectivity/readiness, not inference for every question type. TypeSafe accepts images and box; Ollama and Scuti reject them. Only Scuti streams natively.
+TypeSafe Test uses `/v1/models`, Ollama Test uses `/api/show`, and Scuti Test uses `/health`, and FreeLLMAPI Test uses `GET /v1/decisions/models`. A successful test checks connectivity/readiness, not inference for every question type. TypeSafe accepts images and box; Ollama and Scuti reject them. Only Scuti streams natively.
 
 ## Runtime & settings and Usage
 

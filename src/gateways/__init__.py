@@ -8,9 +8,11 @@ import httpx
 from src.gateways.base import BaseGateway
 from src.gateways.typesafe import TypeSafeGateway
 from src.gateways.ollama import OllamaGateway
+from src.gateways.freellmapi import FreeLLMAPIGateway
 from src.gateways.scuti import ScutiGateway
 
-KINDS: dict[str, type[BaseGateway]] = {"typesafe": TypeSafeGateway, "ollama": OllamaGateway, "scuti": ScutiGateway}
+KINDS: dict[str, type[BaseGateway]] = {"typesafe": TypeSafeGateway, "ollama": OllamaGateway, "scuti": ScutiGateway,
+                                       "freellmapi": FreeLLMAPIGateway}
 
 
 def build_gateway(gateway_id: str, entry: dict[str, Any], transport: httpx.AsyncBaseTransport | None = None) -> BaseGateway:

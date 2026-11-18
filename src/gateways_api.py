@@ -19,6 +19,8 @@ FORM = {  # what the page shows per kind: (field, label, secret, required)
     "ollama": [("url", "Ollama address", False, True), ("model", "Model", False, True)],
     "scuti": [("url", "Model service address", False, True), ("token", "Token", True, False),
               ("strategy", "Strategy", False, False), ("window", "Window (tokens)", False, False)],
+    "freellmapi": [("url", "FreeLLMAPI address", False, True), ("model", "Decision model (empty: automatic)", False, False),
+                   ("api_key", "API key", True, True)],
 }
 
 
