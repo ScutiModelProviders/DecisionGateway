@@ -139,3 +139,14 @@ async def test_test_unknown_gateway(tmp_path):
     with pytest.raises(GatewayError) as error:
         await service.test("nope")
     assert error.value.status == 404
+
+
+async def test_a_test_that_gets_no_answer_gives_up_with_a_message(tmp_path, monkeypatch):
+    async def silent(request):
+        await asyncio.sleep(30)
+
+    monkeypatch.setattr("src.service.TEST_SECONDS", 0.2)
+    service, _ = make(tmp_path, silent)
+    with pytest.raises(GatewayError) as error:
+        await service.test("laya")
+    assert error.value.code == "gateway_timeout" and "No answer within" in error.value.message

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Test gives up after 20 seconds and shows it is working
+
+A Test against an address that never answered waited for the gateway's whole timeout (300 seconds by default) and showed nothing, so the button seemed dead. Test now stops after 20 seconds with "No answer within 20 seconds". While it waits, the button spins, the row breathes and the message counts the seconds; the result flashes the button green or red.
+
 ### Test shows its result where you can see it
 
 The message of Test, Save and Delete sat under the long form, so pressing Test seemed to do nothing. It now sits above the table, scrolls into view, and Test shows "Testing…" while it waits.
