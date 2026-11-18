@@ -10,6 +10,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse, Response
 
 from src.errors import GatewayError
+from src.presets import MODEL_LISTS, PRESETS
 from src.service import DecisionService
 from src.store import GatewayStore, KINDS
 
@@ -32,7 +33,8 @@ def register(mcp: FastMCP, *, admin_password: str, store: GatewayStore, service:
     async def gateways(request: Request) -> Response:
         if (refused := denied(request)) is not None:
             return refused
-        return JSONResponse({"gateways": await service.gateways(), "kinds": {k: FORM[k] for k in KINDS}})
+        return JSONResponse({"gateways": await service.gateways(), "kinds": {k: FORM[k] for k in KINDS},
+                             "presets": PRESETS, "model_lists": MODEL_LISTS})
 
     @mcp.custom_route("/admin/gateways/{gateway_id}", methods=["PUT", "DELETE"])
     async def gateway(request: Request) -> Response:

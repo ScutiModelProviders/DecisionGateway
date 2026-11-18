@@ -38,3 +38,18 @@ def test_bad_input_is_422_with_a_safe_message(client):
 
 def test_page_is_served(client):
     assert "Gateways" in client.get("/admin/gateways.html").text
+
+
+def test_listing_offers_presets_and_model_name_links(client):
+    data = client.get("/admin/gateways", headers=PW).json()
+    assert {"laya", "jev", "ollama"} <= set(data["presets"])
+    assert data["model_lists"] == {"ollama": "https://ollama.com/library"}
+    assert not {"api_key", "token"} & {key for preset in data["presets"].values() for key in preset}
+
+
+def test_every_preset_is_a_valid_entry_once_the_user_adds_the_secrets(tmp_path):
+    from src.presets import PRESETS
+    from src.store import GatewayStore
+    store = GatewayStore(tmp_path / "gateways.json")
+    for name, preset in PRESETS.items():
+        store.put(name, {k: v for k, v in preset.items() if k != "label"} | {"api_key": "x"})

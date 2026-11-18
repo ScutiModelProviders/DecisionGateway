@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Presets and a model-name button on the Gateways page
+
+A **Start from** list on the Gateways page fills the form from a preset: `laya` (Scuti, `http://host.docker.internal:29220`, `english-then-typed`, window 4096), `jev` (TypeSafe, `jev-latest`) and `ollama` (`127.0.0.1:11434`). Presets hold no secrets; add the token or API key and Save. An Ollama gateway row also gets a Models button that opens ollama.com's model names in a new tab. `GET /admin/gateways` returns `presets` and `model_lists`.
+
 ### Test gives up after 20 seconds and shows it is working
 
 A Test against an address that never answered waited for the gateway's whole timeout (300 seconds by default) and showed nothing, so the button seemed dead. Test now stops after 20 seconds with "No answer within 20 seconds". While it waits, the button spins, the row breathes and the message counts the seconds; the result flashes the button green or red.
