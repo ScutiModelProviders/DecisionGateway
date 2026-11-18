@@ -41,6 +41,17 @@
   form label:first-child { margin-top: 0; } form p { margin-top: 18px; }
   .row { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; margin-top: 16px; } .row label { margin-top: 0; }
   #status { margin-top: 14px; } #status:not(:empty) { padding: 10px 14px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); } .bad { color: var(--error); } .ok { color: var(--ok); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+  @keyframes breathe { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+  @keyframes flash-ok { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 60%, transparent); } 100% { box-shadow: 0 0 0 9px transparent; } }
+  @keyframes flash-bad { 0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--error) 60%, transparent); } 100% { box-shadow: 0 0 0 9px transparent; } }
+  button.icon-btn { transition: background-color .15s, border-color .15s, color .15s, transform .1s; } button.icon-btn:active { transform: scale(.94); }
+  .icon-btn[aria-busy=true] { border-color: var(--accent); color: var(--accent); cursor: progress; opacity: 1; } .icon-btn[aria-busy=true] svg { animation: spin .9s linear infinite; }
+  .icon-btn.flash-ok { color: var(--ok); border-color: var(--ok); animation: flash-ok .9s ease-out; } .icon-btn.flash-bad { color: var(--error); border-color: var(--error); animation: flash-bad .9s ease-out; }
+  tr.testing td { animation: breathe 1.4s ease-in-out infinite; } tr.testing td:last-child { animation: none; }
+  #status.settle { animation: rise .22s ease-out; } #status.busy { color: var(--muted); }
+  #status.busy::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 8px; vertical-align: -1px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
   @media (max-width: 640px) { table { min-width: 560px; } }
 </style>
 </head>
@@ -88,7 +99,11 @@ function iconButton(kind, label, tag = "button") {
   return el;
 }
 const $ = (id) => document.getElementById(id);
-const say = (text, cls = "") => { $("status").className = cls; $("status").textContent = text; $("status").scrollIntoView({ block: "center" }); };
+const say = (text, cls = "", scroll = true) => {
+  const box = $("status"); box.textContent = text; box.className = cls;
+  if (cls !== "busy") { box.classList.remove("settle"); void box.offsetWidth; box.classList.add("settle"); }
+  if (scroll) box.scrollIntoView({ block: "center" });
+};
 const call = async (method, path, body) => {
   const reply = await fetch(path, { method, headers: { "X-Admin-Password": $("pw").value, "Content-Type": "application/json" }, body: body ? JSON.stringify(body) : undefined });
   const data = await reply.json().catch(() => ({}));
@@ -115,8 +130,8 @@ async function load() {
       const tr = rows.insertRow();
       for (const v of [g.id, g.kind, g.model || g.url, g.streams ? "yes" : "no", g.images ? "yes" : "no", g.types.join(", "), g.reachable ? "yes" : "no"]) tr.insertCell().textContent = v;
       const actions = document.createElement("div"); actions.className = "actions"; tr.insertCell().append(actions);
-      for (const [kind, name, fn] of [["test", "Test", () => test(g.id)], ["edit", "Edit", () => edit(g)], ["delete", "Delete", () => remove(g.id)]]) {
-        const b = iconButton(kind, `${name} ${g.id}`); b.onclick = fn; actions.append(b);
+      for (const [kind, name, fn] of [["test", "Test", (b) => test(g.id, b)], ["edit", "Edit", () => edit(g)], ["delete", "Delete", () => remove(g.id)]]) {
+        const b = iconButton(kind, `${name} ${g.id}`); b.onclick = () => fn(b); actions.append(b);
       }
     }
     if (!data.gateways.length) rows.insertRow().insertCell().textContent = "No gateways saved yet.";
@@ -124,7 +139,23 @@ async function load() {
   } catch (e) { say(e.message, "bad"); }
 }
 function edit(g) { $("gid").value = g.id; $("kind").value = g.kind; drawFields(g); $("timeout_s").value = g.timeout_s; $("gid").focus(); }
-async function test(id) { say(`Testing ${id}…`); try { const r = await call("POST", `/admin/gateways/${id}/test`); say(r.ok ? `${id}: ${r.message}` : `${id}: ${r.detail}`, r.ok ? "ok" : "bad"); } catch (e) { say(e.message, "bad"); } }
+const SPINNER = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/></svg>';
+async function test(id, button) {
+  const row = button.closest("tr"), idle = button.innerHTML, started = Date.now();
+  button.disabled = true; button.setAttribute("aria-busy", "true"); button.innerHTML = SPINNER; row.classList.add("testing");
+  const tick = (scroll) => say(`Testing ${id}… ${Math.floor((Date.now() - started) / 1000)} s`, "busy", scroll);
+  tick(true); const timer = setInterval(() => tick(false), 1000);
+  let ok = false;
+  try {
+    const r = await call("POST", `/admin/gateways/${id}/test`); ok = r.ok;
+    say(ok ? `${id}: ${r.message}` : `${id}: ${r.detail}`, ok ? "ok" : "bad");
+  } catch (e) { say(`${id}: ${e.message}`, "bad"); }
+  finally {
+    clearInterval(timer); row.classList.remove("testing");
+    button.disabled = false; button.removeAttribute("aria-busy"); button.innerHTML = idle;
+    const flash = ok ? "flash-ok" : "flash-bad"; button.classList.add(flash); setTimeout(() => button.classList.remove(flash), 1200);
+  }
+}
 async function remove(id) { if (!confirm(`Delete the gateway "${id}"?`)) return; try { await call("DELETE", `/admin/gateways/${id}`); await load(); } catch (e) { say(e.message, "bad"); } }
 $("load").onclick = load;
 if (new URLSearchParams(location.search).has("embed")) {  // shown in the admin sidebar: the signed-in password is reused
