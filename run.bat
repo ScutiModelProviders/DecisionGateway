@@ -46,7 +46,7 @@ rem git-ignored tools\deploy.local.ini (copy tools\deploy.local.example.ini) so 
 setlocal enabledelayedexpansion
 if exist "%~dp0tools\deploy.local.ini" for /f "usebackq eol=# tokens=1,* delims==" %%A in ("%~dp0tools\deploy.local.ini") do set "%%A=%%B"
 if not defined DEPLOY_HOST set "DEPLOY_HOST=lex@scutiserver1.local"
-if not defined DEPLOY_DIR set "DEPLOY_DIR=/media/ZimaOS-HD/Apps/ToolServices/DecisionGateway"
+if not defined DEPLOY_DIR set "DEPLOY_DIR=/media/ZimaOS-HD/Apps/ModelProviders/DecisionGateway"
 if not defined DEPLOY_WEB_PORT set "DEPLOY_WEB_PORT=7681"
 for %%I in ("%~dp0.") do set "ROOT=%%~fI"
 
@@ -108,7 +108,7 @@ if not "!RC!"=="0" (
     exit /b 1
 )
 echo Done.
-call :d_reminder ".env is on the server. In the web terminal:" "docker compose up -d --build" "(run git pull here first if the code changed)"
+call :d_reminder ".env is on the server. Standalone use only: the Citadel stack ignores it (its root .env sets the admin password). In the web terminal:" "docker compose up -d --force-recreate" "(do not run it beside the Citadel stack: port 29406 would clash)"
 exit /b 0
 
 rem :d_add <path relative to the DecisionGateway root, same path on the server>
