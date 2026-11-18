@@ -22,7 +22,7 @@ Create one token per caller. Copy the newly issued token directly into the calle
 
 ## Gateways
 
-Open `/admin/gateways.html`, enter the admin password and press **Load gateways**. The table shows id, kind, model/address, streams, images, supported question types and reachability. **Edit** loads an entry into the form; **Delete** requests confirmation; **Test** probes connectivity. **Start from** fills the form from a preset (`laya`, `jev`, `ollama`, `freellmapi`); add the secret yourself. An Ollama row has a Models button that opens ollama.com's model names in a new tab.
+Open `/admin/gateways.html`, enter the admin password and press **Load gateways**. The table shows id, kind, model/address, streams, images, supported question types and reachability. **Edit** loads an entry into the form; **Delete** requests confirmation; **Test** probes connectivity. **Start from** fills the form from a preset (`laya`, `jev`, `ollama`, `freellmapi`); add the secret yourself. An Ollama row has a Models button that opens ollama.com's model names in a new tab, and a TypeSafe row opens docs.typesafe.ai/models.
 
 | Fields | Meaning |
 |---|---|

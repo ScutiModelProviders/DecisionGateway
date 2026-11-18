@@ -43,7 +43,7 @@ def test_page_is_served(client):
 def test_listing_offers_presets_and_model_name_links(client):
     data = client.get("/admin/gateways", headers=PW).json()
     assert {"laya", "jev", "ollama", "freellmapi"} <= set(data["presets"])
-    assert data["model_lists"] == {"ollama": "https://ollama.com/library"}
+    assert data["model_lists"] == {"ollama": "https://ollama.com/library", "typesafe": "https://docs.typesafe.ai/models"}
     assert not {"api_key", "token"} & {key for preset in data["presets"].values() for key in preset}
 
 
