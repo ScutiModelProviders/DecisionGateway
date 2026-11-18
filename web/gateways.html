@@ -73,6 +73,7 @@
 
 <h2>Add or change a gateway</h2>
 <form id="form">
+  <label for="preset">Start from</label><select id="preset"><option value="">Blank</option></select>
   <label for="gid">Id</label><input id="gid" required pattern="[a-z0-9][a-z0-9_\-]{0,47}" autocomplete="off">
   <label for="kind">Kind</label><select id="kind"><option>typesafe</option><option>ollama</option><option>scuti</option></select>
   <div id="fields"></div>
@@ -82,7 +83,7 @@
 </form>
 
 <script>
-let kinds = {};
+let kinds = {}, presets = {}, modelLists = {};
 const ICONS = {
   models: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
   test: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
@@ -124,12 +125,17 @@ function drawFields(saved = {}) {
 }
 async function load() {
   try {
-    const data = await call("GET", "/admin/gateways"); kinds = data.kinds; drawFields();
+    const data = await call("GET", "/admin/gateways"); kinds = data.kinds; presets = data.presets || {}; modelLists = data.model_lists || {}; drawFields();
+    $("preset").replaceChildren(new Option("Blank", ""), ...Object.entries(presets).map(([id, p]) => new Option(p.label, id)));
     const rows = $("rows"); rows.replaceChildren();
     for (const g of data.gateways) {
       const tr = rows.insertRow();
       for (const v of [g.id, g.kind, g.model || g.url, g.streams ? "yes" : "no", g.images ? "yes" : "no", g.types.join(", "), g.reachable ? "yes" : "no"]) tr.insertCell().textContent = v;
       const actions = document.createElement("div"); actions.className = "actions"; tr.insertCell().append(actions);
+      if (modelLists[g.kind]) {  // the provider's own page of model names, in a new tab
+        const a = iconButton("models", `Model names for ${g.id} (opens in a new tab)`, "a");
+        a.href = modelLists[g.kind]; a.target = "_blank"; a.rel = "noopener noreferrer"; actions.append(a);
+      }
       for (const [kind, name, fn] of [["test", "Test", (b) => test(g.id, b)], ["edit", "Edit", () => edit(g)], ["delete", "Delete", () => remove(g.id)]]) {
         const b = iconButton(kind, `${name} ${g.id}`); b.onclick = () => fn(b); actions.append(b);
       }
@@ -164,6 +170,11 @@ if (new URLSearchParams(location.search).has("embed")) {  // shown in the admin 
   if ($("pw").value) load();
 }
 $("kind").onchange = () => drawFields();
+$("preset").onchange = () => {  // fill the form from a preset; secrets are never part of one
+  const p = presets[$("preset").value]; if (!p) return;
+  if (!$("gid").value) $("gid").value = $("preset").value;
+  $("kind").value = p.kind; drawFields(p);
+};
 $("form").onsubmit = async (event) => {
   event.preventDefault();
   const body = { kind: $("kind").value, timeout_s: Number($("timeout_s").value) };
