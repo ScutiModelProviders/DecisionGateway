@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+### Usual addresses and a model-name link on the Gateways page
+
+A new gateway starts from the usual address of its kind (TypeSafe's API, Ollama on `127.0.0.1:11434`, a Scuti model service on `127.0.0.1:29220`); change it when the service runs elsewhere. An Ollama gateway shows a link to the model names on ollama.com.
+
+### Icon buttons on the Gateways page
+
+The actions of a saved gateway (Test, Edit, Delete, and Models where a preset has a model list) are square icon buttons of one size, each with a tooltip and a screen-reader name.
+
 ### Neutral dark theme
 
 The admin page's dark theme uses the neutral dark palette with the orange accent again, in place of the blue-navy one from the tabbed redesign. The light theme is unchanged.
