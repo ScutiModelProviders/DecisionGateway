@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+### Icon buttons on the Gateways page
+
+The actions of a saved gateway (Test, Edit, Delete, and Models where a preset has a model list) are square icon buttons of one size, each with a tooltip and a screen-reader name.
+
 ### Neutral dark theme
 
 The admin page's dark theme uses the neutral dark palette with the orange accent again, in place of the blue-navy one from the tabbed redesign. The light theme is unchanged.

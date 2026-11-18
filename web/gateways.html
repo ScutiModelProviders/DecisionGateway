@@ -23,7 +23,11 @@
   label { display: block; font-weight: 500; margin: 16px 0 6px; }
   button, input, select { font: inherit; color: inherit; }
   button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 38px; border: 1px solid var(--border); border-radius: 6px; padding: 8px 12px; background: var(--bg); cursor: pointer; }
-  button:hover { background: var(--surface); } button.small { padding: 6px 10px; min-height: 32px; font-size: .9rem; }
+  button:hover { background: var(--surface); }
+  button.icon-btn, a.icon-btn { width: 34px; height: 34px; min-height: 0; padding: 0; color: inherit; text-decoration: none; }
+  .icon-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+  .icon-btn.danger:hover { color: var(--error); border-color: var(--error); }
+  .actions { display: flex; gap: 6px; }
   button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); } button.primary:hover { filter: brightness(.95); }
   button:disabled { opacity: .55; cursor: default; }
   input, select { width: 100%; max-width: 30rem; min-width: 0; border: 1px solid var(--border); border-radius: 6px; padding: 9px 12px; background: var(--bg); caret-color: var(--accent); }
@@ -67,6 +71,21 @@
 
 <script>
 let kinds = {};
+const ICONS = {
+  models: '<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>',
+  test: '<circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.5"/>',
+  edit: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/>',
+  delete: '<path d="M4 7h16M10 11v6M14 11v6M6 7l1 12h10l1-12M9 7V4h6v3"/>',
+};
+/** A square icon button with a text name for screen readers and a tooltip. */
+function iconButton(kind, label, tag = "button") {
+  const el = document.createElement(tag);
+  el.className = "icon-btn" + (kind === "delete" ? " danger" : "");
+  if (tag === "button") el.type = "button";
+  el.title = label; el.setAttribute("aria-label", label);
+  el.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS[kind]}</svg>`;
+  return el;
+}
 const $ = (id) => document.getElementById(id);
 const say = (text, cls = "") => { $("status").className = cls; $("status").textContent = text; };
 const call = async (method, path, body) => {
@@ -91,9 +110,9 @@ async function load() {
     for (const g of data.gateways) {
       const tr = rows.insertRow();
       for (const v of [g.id, g.kind, g.model || g.url, g.streams ? "yes" : "no", g.images ? "yes" : "no", g.types.join(", "), g.reachable ? "yes" : "no"]) tr.insertCell().textContent = v;
-      const cell = tr.insertCell();
-      for (const [name, fn] of [["Test", () => test(g.id)], ["Edit", () => edit(g)], ["Delete", () => remove(g.id)]]) {
-        const b = document.createElement("button"); b.type = "button"; b.className = "small"; b.textContent = name; b.setAttribute("aria-label", `${name} ${g.id}`); b.onclick = fn; cell.append(b, " ");
+      const actions = document.createElement("div"); actions.className = "actions"; tr.insertCell().append(actions);
+      for (const [kind, name, fn] of [["test", "Test", () => test(g.id)], ["edit", "Edit", () => edit(g)], ["delete", "Delete", () => remove(g.id)]]) {
+        const b = iconButton(kind, `${name} ${g.id}`); b.onclick = fn; actions.append(b);
       }
     }
     if (!data.gateways.length) rows.insertRow().insertCell().textContent = "No gateways saved yet.";
