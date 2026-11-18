@@ -76,7 +76,7 @@ The default in-flight limit is 8. Token calls-per-minute limits are configured p
 
 ## Admin page
 
-The shared page provides Overview, Access tokens, Runtime & settings, Usage and Connect & API. Model connections has no fixed gateway slots. Manage gateways on the separate page linked from Connect & API. No service-specific Playground operation is registered. See [the web UI guide](docs/guide-web-ui.md).
+The shared page provides Overview, Access tokens, Runtime & settings, Usage and Connections. Gateways holds the gateway list and editor (also at `/admin/gateways.html`); there are no fixed gateway slots. No service-specific Playground operation is registered. See [the web UI guide](docs/guide-web-ui.md).
 
 ## Settings and environment
 

@@ -4,17 +4,17 @@ Set `SERVICE_ADMIN_PASSWORD`, then open `http://127.0.0.1:29406/admin/` and sign
 
 ## Navigation
 
-The shared sidebar supports theme and collapsed navigation preferences. Gateways use a separate page, `/admin/gateways.html`, listed under Connect & API.
+Open pages using the tabs below the service name. Overview shows live readiness and request counts since restart. Use **Gateways** to list, add, test and change gateways without leaving the admin page.
 
 | Page | Behavior |
 |---|---|
 | Overview | Saved gateway ids and kinds; health readiness means at least one saved gateway |
 | Playground | No DecisionGateway operation is registered; use the README's HTTP examples |
 | Access tokens | Create, expire, rate-limit and revoke caller tokens |
-| Model connections | No fixed slots; decisions use the separate Gateways page |
+| Gateways | The gateway list and editor |
 | Runtime & settings | Save options and reset values to defaults |
 | Usage | Calls, errors and average time per requester, reset on restart |
-| Connect & API | Addresses, endpoints and the gateway admin-page path |
+| Connections | Addresses, endpoints and the gateway admin-page path |
 
 ## Access tokens
 
@@ -51,7 +51,7 @@ The shared page reads and saves these through password-guarded `GET` / `PUT /adm
 
 **Data folder** applies after restart. Settings, gateways and caller tokens remain in the original state folder. Existing files are not moved. Usage counts one entry per decide request; later stream lines do not create additional entries. `X-Requester-Username` labels usage and defaults to `unknown`.
 
-## Connect & API
+## Connections
 
 Copy the appropriate address for native clients, Docker containers or another machine. Containers sharing `citadel_core` use `http://decisiongateway:29406`. `/mcp` is an empty shell: it has no decision tools. Use `/api/decide`, `/api/gateways` and `/api/validate`.
 
