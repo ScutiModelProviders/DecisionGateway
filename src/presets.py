@@ -9,6 +9,9 @@ PRESETS: dict[str, dict] = {
              "strategy": "english-then-typed", "window": 4096},
     "jev": {"kind": "typesafe", "label": "Jev (TypeSafe)", "url": TYPESAFE_URL, "model": "jev-latest"},
     "ollama": {"kind": "ollama", "label": "Ollama", "url": "http://127.0.0.1:11434", "model": "qwen3.5:4b"},
+    # Router over free provider tiers (AI/ModelEngines/FreeLLMApiService, host port 29652): POST /v1/decisions picks a free
+    # decision model itself. Its dashboard is on the same port.
+    "freellmapi": {"kind": "freellmapi", "label": "FreeLLMAPI (free decision models)", "url": "http://host.docker.internal:29652"},
 }
 
 # Where a kind lists its model names (a link on the Gateways page, opened in a new tab). Links are not checked at run time.

@@ -11,7 +11,7 @@ from typing import Any
 from src import runtime
 from src.admin_api import MAX_TOKEN, _valid_url
 
-KINDS = ("typesafe", "ollama", "scuti")
+KINDS = ("typesafe", "ollama", "scuti", "freellmapi")
 ID = re.compile(r"[a-z0-9][a-z0-9_-]{0,47}")
 TYPESAFE_URL = "https://api.typesafe.ai/v1/systemone"
 DEFAULT_TIMEOUT = 60
@@ -20,6 +20,7 @@ _FIELDS = {
     "typesafe": ("url", "api_key", "model"),
     "ollama": ("url", "model"),
     "scuti": ("url", "token", "strategy", "window"),
+    "freellmapi": ("url", "api_key", "model"),
 }
 
 
@@ -58,7 +59,7 @@ class GatewayStore:
             raise ValueError("Send an object.")
         kind = data.get("kind")
         if kind not in KINDS:
-            raise ValueError("The kind must be typesafe, ollama or scuti.")
+            raise ValueError("The kind must be typesafe, ollama, scuti or freellmapi.")
         with self._lock:
             gateways = self._read()
             old = gateways.get(gid, {}) if gateways.get(gid, {}).get("kind") == kind else {}
@@ -95,6 +96,9 @@ class GatewayStore:
             entry["api_key"] = text("api_key", "The API key", True, MAX_TOKEN)
         elif kind == "ollama":
             entry["model"] = text("model", "The model", True, 100)
+        elif kind == "freellmapi":
+            entry["model"] = text("model", "The model", False, 100) or ""  # empty: FreeLLMAPI picks a decision model
+            entry["api_key"] = text("api_key", "The API key", True, MAX_TOKEN)
         else:
             if (token := text("token", "The token", False, MAX_TOKEN)) is not None:
                 entry["token"] = token

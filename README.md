@@ -1,6 +1,6 @@
 # DecisionGateway
 
-One HTTP contract for decision-type models, on port **29406**. Callers name a saved gateway and send typed questions. TypeSafe Jev, Ollama or a Scuti model service answers them. DecisionGateway holds no model. Its FastMCP shell exposes no tools.
+One HTTP contract for decision-type models, on port **29406**. Callers name a saved gateway and send typed questions. TypeSafe Jev, Ollama, a Scuti model service or FreeLLMAPI (free decision models) answers them. DecisionGateway holds no model. Its FastMCP shell exposes no tools.
 
 ## API
 
@@ -47,9 +47,10 @@ Save entries at `/admin/gateways.html`; addresses and upstream credentials have 
 |---|---|---|---|---|
 | `typesafe` | `url` (default TypeSafe `/v1/systemone`), required `model`, required `api_key` on create | Yes | Yes | No |
 | `ollama` | Required `url`, `model` | No | No | No |
+| `freellmapi` | Required `url` (for example `http://host.docker.internal:29652`), required `api_key`, optional `model` (empty: FreeLLMAPI picks a decision model) | No | No | No |
 | `scuti` | Required `url`; optional `token`, `strategy`, `window` (16–8192, sent as `max_len`) | No | No | Yes |
 
-All kinds answer choice, score and noul. Scuti calls `DSC_Laya_Model` or `DSC_D3_Model` at `/v1/ask`. Ollama uses `/v1/systemone`, and must have the requested decision model installed. TypeSafe uses native question types and makes one concurrent call per question. Scuti plain requests retry 429 twice, honoring `Retry-After` up to 10 seconds. Secrets are write-only; public entries use `has_api_key` / `has_token` flags. Omitting a secret when editing preserves it.
+All kinds answer choice, score and noul. Scuti calls `DSC_Laya_Model` or `DSC_D3_Model` at `/v1/ask`. Ollama uses `/v1/systemone`, and must have the requested decision model installed. TypeSafe uses native question types and makes one concurrent call per question. `freellmapi` sends all questions in one `POST {url}/v1/decisions` call and uses the Ollama bars (0.90 for two options or noul, else 0.75). Free decision models differ in quality; pin one with `model` (`GET /v1/decisions/models` on FreeLLMAPI lists them). Scuti plain requests retry 429 twice, honoring `Retry-After` up to 10 seconds. Secrets are write-only; public entries use `has_api_key` / `has_token` flags. Omitting a secret when editing preserves it.
 
 ### Errors and limits
 
