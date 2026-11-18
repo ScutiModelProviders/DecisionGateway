@@ -15,4 +15,4 @@ PRESETS: dict[str, dict] = {
 }
 
 # Where a kind lists its model names (a link on the Gateways page, opened in a new tab). Links are not checked at run time.
-MODEL_LISTS: dict[str, str] = {"ollama": "https://ollama.com/library"}
+MODEL_LISTS: dict[str, str] = {"ollama": "https://ollama.com/library", "typesafe": "https://docs.typesafe.ai/models"}

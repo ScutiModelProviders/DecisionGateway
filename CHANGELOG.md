@@ -2,13 +2,17 @@
 
 ## Unreleased
 
+### Models button looks like the other icon buttons
+
+The Models link on a gateway row is an `<a>`, which had no border, background or centering, so it sat misaligned beside the Test, Edit and Delete buttons. It now uses the same square style as ConversationGateway's.
+
 ### FreeLLMAPI as a decision gateway
 
 New gateway kind `freellmapi` for FreeLLMAPI's `POST /v1/decisions`, with a `freellmapi` preset (`http://host.docker.internal:29652`). All questions go in one call; leave Decision model empty and FreeLLMAPI picks a free decision model, or pin one. Choice, score and noul questions; no images or box. The row's Models button opens FreeLLMAPI's dashboard in a new tab.
 
 ### Presets and a model-name button on the Gateways page
 
-A **Start from** list on the Gateways page fills the form from a preset: `laya` (Scuti, `http://host.docker.internal:29220`, `english-then-typed`, window 4096), `jev` (TypeSafe, `jev-latest`) and `ollama` (`127.0.0.1:11434`). Presets hold no secrets; add the token or API key and Save. An Ollama gateway row also gets a Models button that opens ollama.com's model names in a new tab. `GET /admin/gateways` returns `presets` and `model_lists`.
+A **Start from** list on the Gateways page fills the form from a preset: `laya` (Scuti, `http://host.docker.internal:29220`, `english-then-typed`, window 4096), `jev` (TypeSafe, `jev-latest`) and `ollama` (`127.0.0.1:11434`). Presets hold no secrets; add the token or API key and Save. An Ollama gateway row also gets a Models button that opens ollama.com's model names in a new tab; a TypeSafe row opens the Jev model list on docs.typesafe.ai. `GET /admin/gateways` returns `presets` and `model_lists`.
 
 ### Test gives up after 20 seconds and shows it is working
 
